@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/facom"
+        android:layout_gravity="start"
+        android:adjustViewBounds="true" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/scroll"
+            android:text="@string/scroll"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:focusableInTouchMode="true" />
+    </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical">
+    <ImageButton
+        android:id="@+id/facebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/progressBar"
+        android:layout_alignBottom="@id/progressBar"
+        android:layout_alignStart="@id/progressBar"
+        android:layout_alignTop="@id/progressBar"
+        android:translationX="-100dp"
+        android:background="@drawable/facebook" />
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:progressBarStyleLarge"
+        android:indeterminate="true"
+        android:id="@+id/progressBar"
+        android:background="@drawable/ic_pause_circle_outline_black_48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_play_circle_outline_black_48dp"
+        android:layout_alignEnd="@id/progressBar"
+        android:layout_alignBottom="@id/progressBar"
+        android:layout_alignStart="@id/progressBar"
+        android:layout_alignTop="@id/progressBar"/>
+    <ImageButton
+        android:id="@+id/reload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/progressBar"
+        android:layout_alignBottom="@id/progressBar"
+        android:layout_alignStart="@id/progressBar"
+        android:layout_alignTop="@id/progressBar"
+        android:translationX="100dp"
+        android:background="@drawable/ic_refresh_black_48dp" />
+    </RelativeLayout>
+</LinearLayout>

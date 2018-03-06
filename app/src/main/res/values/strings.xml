@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Rádio FACOM - 103,9 FM</string>
+    <string name="play">PLAY</string>
+    <string name="scroll">Rádio FACOM UFJF - 103,9 - A melhor rádio universitária do país!</string>
+    <string name="action_info">Info</string>
+    <string name="whatsapp">(32) 99114-4488</string>
+    <string name="endereco">ufjf.br/radio</string>
+    <string name="developed">Desenvolvido por:</string>
+    <string name="mago">Mago Technologies</string>
+    <string name="apoio">Apoio:</string>
+    <string name="criado">Criado na Gestão 2017/18</string>
+    <string name="monitora">Monitora: Carla Baldutti</string>
+    <string name="diretor">Diretor de Programação: Prof. Dr. Márcio de Oliveira Guerra</string>
+    <string name="tecnico">Técnico de som: Jocemar de Souza</string>
+    <string name="soundcloud">soundcloud.com/radiofacom</string>
+    <string-array name="menu_array">
+        <item>Rádio FACOM - 103,9 FM</item>
+        <item>Curso de Inglês</item>
+        <item>Entrevistas</item>
+        <item>Memória</item>
+        <item>Negócio Universitário</item>
+        <item>Núcleos da Facom</item>
+        <item>PetCast</item>
+        <item>Rádio Novela</item>
+    </string-array>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_websearch">Web search</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+    <string name="information">Informações</string>
+
+</resources>
