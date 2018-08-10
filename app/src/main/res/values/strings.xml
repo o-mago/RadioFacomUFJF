@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Rádio FACOM - 103,9 FM</string>
     <string name="play">PLAY</string>
-    <string name="scroll">Rádio FACOM UFJF - 103,9 - A melhor rádio universitária do país!</string>
+    <string name="scroll">Rádio FACOM UFJF - 103,9 FM - A melhor rádio universitária do país!</string>
     <string name="action_info">Info</string>
     <string name="whatsapp">(32) 99114-4488</string>
     <string name="endereco">ufjf.br/radio</string>
@@ -13,15 +13,18 @@
     <string name="diretor">Diretor de Programação: Prof. Dr. Márcio de Oliveira Guerra</string>
     <string name="tecnico">Técnico de som: Jocemar de Souza</string>
     <string name="soundcloud">soundcloud.com/radiofacom</string>
+    <string name="instagram">\@radiofacom</string>
     <string-array name="menu_array">
         <item>Rádio FACOM - 103,9 FM</item>
-        <item>Curso de Inglês</item>
+        <item>Programação</item>
         <item>Entrevistas</item>
-        <item>Memória</item>
-        <item>Negócio Universitário</item>
-        <item>Núcleos da Facom</item>
-        <item>PetCast</item>
-        <item>Rádio Novela</item>
+        <item>Equipe Esportiva</item>
+        <item>Podcasts</item>
+        <item>Projetos da UFJF</item>
+        <item>Programas Antigos</item>
+        <item>Rádio Novelas</item>
+        <item>Reportagens</item>
+        <item>Autoral Playlist</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
@@ -29,4 +32,7 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="information">Informações</string>
 
+    <string name="error_player">Error initializing YouTube player: %s</string>
+    <string name="seek_to">Jump To</string>
+    <string name="seek_to_hint">Seconds</string>
 </resources>

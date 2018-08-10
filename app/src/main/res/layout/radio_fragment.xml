@@ -44,7 +44,6 @@
         style="?android:progressBarStyleLarge"
         android:indeterminate="true"
         android:id="@+id/progressBar"
-        android:background="@drawable/ic_pause_circle_outline_black_48dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
     <ImageButton
@@ -65,6 +64,6 @@
         android:layout_alignStart="@id/progressBar"
         android:layout_alignTop="@id/progressBar"
         android:translationX="100dp"
-        android:background="@drawable/ic_refresh_black_48dp" />
+        android:background="@drawable/ic_stop_circle_outline_black_48dp" />
     </RelativeLayout>
 </LinearLayout>
