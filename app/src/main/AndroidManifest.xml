@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreenActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,10 +22,13 @@
         </activity>
         <!--android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
         <activity android:name=".RadioMain"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"/>
         <activity android:name=".VideoFullscreen" android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="5098f74b279998f956b1298eeef7086b0f594ce0" />
     </application>
 
 </manifest>

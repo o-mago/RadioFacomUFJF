@@ -12,7 +12,7 @@
     <string name="monitora">Monitora: Carla Baldutti</string>
     <string name="diretor">Diretor de Programação: Prof. Dr. Márcio de Oliveira Guerra</string>
     <string name="tecnico">Técnico de som: Jocemar de Souza</string>
-    <string name="soundcloud">soundcloud.com/radiofacom</string>
+    <string name="soundcloud">/radiofacom</string>
     <string name="instagram">\@radiofacom</string>
     <string-array name="menu_array">
         <item>Rádio FACOM - 103,9 FM</item>
@@ -23,7 +23,7 @@
         <item>Projetos da UFJF</item>
         <item>Programas Antigos</item>
         <item>Rádio Novelas</item>
-        <item>Reportagens</item>
+        <item>Radiojornalismo</item>
         <item>Autoral Playlist</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>

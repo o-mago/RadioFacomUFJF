@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
+    android:background="#FFFFFF"
     android:orientation="vertical">
 
     <ImageView
@@ -10,6 +10,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:scaleType="centerInside"
-        android:src="@drawable/facom"
-        android:background="@drawable/radio_facom"/>
+        android:src="@drawable/facom_cortado"
+        android:layout_marginHorizontal="10dp" />
 </LinearLayout>
