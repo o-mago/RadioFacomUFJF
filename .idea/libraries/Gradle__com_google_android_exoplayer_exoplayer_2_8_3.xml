@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.exoplayer:exoplayer-2.8.3">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-2.8.3.aar/99722facabe1ccc0c781cc62787477ef/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-2.8.3.aar/99722facabe1ccc0c781cc62787477ef/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-2.8.3.aar/4de1082dd27b529b0e309dc8c581f5a2/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-2.8.3.aar/4de1082dd27b529b0e309dc8c581f5a2/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
