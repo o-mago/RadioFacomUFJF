@@ -41,12 +41,6 @@
             android:layout_alignTop="@id/playButton"
             android:translationX="-100dp"
             android:background="@drawable/facebook" />
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:indeterminate="true"
-            android:layout_centerInParent="true" />
         <ImageView
             android:id="@+id/playButton"
             android:layout_width="70dp"
@@ -65,5 +59,11 @@
             android:translationX="100dp"
             android:tint="#ffffff"
             android:src="@drawable/ic_stop_circle_outline_black_48dp" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:indeterminate="true"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 </LinearLayout>

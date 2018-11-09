@@ -360,7 +360,11 @@ public class RadioMain extends AppCompatActivity {
                 break;
                 //Autoral Playlist
             case 9:
-
+                //Festival da Canção
+                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBGlINE9ongx_aw1-NajBaqU");
+                break;
+            case 10:
+                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHgLZmG9vE1PmFqYoU04CrB");
                 break;
             default:
                 break;

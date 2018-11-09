@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Rádio FACOM</string>
     <string name="play">PLAY</string>
+    <string name="pause">PAUSE</string>
+    <string name="restart">RESTART</string>
+    <string name="guess">guess</string>
+    <string name="notification_text">text</string>
     <string name="scroll">Rádio FACOM UFJF - 103,9 FM - A melhor rádio universitária do país!</string>
     <string name="action_info">Info</string>
     <string name="whatsapp">(32) 99114-4488</string>
@@ -25,6 +29,7 @@
         <item>Rádio Novelas</item>
         <item>Radiojornalismo</item>
         <item>Autoral Playlist</item>
+        <item>Festival da Canção</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
