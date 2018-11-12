@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "718014482429",
+    "firebase_url": "https://radio-facom.firebaseio.com",
+    "project_id": "radio-facom",
+    "storage_bucket": "radio-facom.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718014482429:android:3dd756efa04c37df",
+        "android_client_info": {
+          "package_name": "magosoftware.radiofacomufjf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718014482429-mmkmirml06ekueov6fll85j3ukq3e2lg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "magosoftware.radiofacomufjf",
+            "certificate_hash": "c6d566f731260f30e96c8cca805af5761f147cae"
+          }
+        },
+        {
+          "client_id": "718014482429-grsuudge8963s9tfo5k67g0d8crjpk8q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoS0J1BTIxPuag7CHoPzMWbjd4lbH31aI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718014482429-grsuudge8963s9tfo5k67g0d8crjpk8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

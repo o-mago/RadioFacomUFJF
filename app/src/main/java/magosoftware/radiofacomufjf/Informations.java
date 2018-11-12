@@ -72,16 +72,21 @@ public class Informations extends Fragment implements View.OnClickListener {
         switch(v.getId()) {
             case R.id.whatsapp_icon:
                 Log.d("TESTE","FOI");
-                sendWhatsApp = new Intent(Intent.ACTION_SENDTO);
-                sendWhatsApp.setData(Uri.parse("smsto:" + number));
-                sendWhatsApp.setPackage("com.whatsapp");
+//                sendWhatsApp = new Intent(Intent.ACTION_SENDTO);
+//                sendWhatsApp.setData(Uri.parse("smsto:" + number));
+//                sendWhatsApp.setPackage("com.whatsapp");
+//                startActivity(sendWhatsApp);
+                sendWhatsApp = new Intent(Intent.ACTION_VIEW);
+                sendWhatsApp.setData(Uri.parse("https://api.whatsapp.com/send?phone="+number));
                 startActivity(sendWhatsApp);
                 break;
             case R.id.numero_telefone:
                 Log.d("TESTE","FOI");
-                sendWhatsApp = new Intent(Intent.ACTION_SENDTO);
-                sendWhatsApp.setData(Uri.parse("smsto:" + number));
-                sendWhatsApp.setPackage("com.whatsapp");
+//                sendWhatsApp = new Intent(Intent.ACTION_SENDTO);
+//                sendWhatsApp.setData(Uri.parse("smsto:" + number));
+//                sendWhatsApp.setPackage("com.whatsapp");
+                sendWhatsApp = new Intent(Intent.ACTION_VIEW);
+                sendWhatsApp.setData(Uri.parse("https://api.whatsapp.com/send?phone="+number));
                 startActivity(sendWhatsApp);
                 break;
             case R.id.site:

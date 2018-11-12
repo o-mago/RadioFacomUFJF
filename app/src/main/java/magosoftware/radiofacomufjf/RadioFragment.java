@@ -12,24 +12,15 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Rating;
-import android.media.session.MediaController;
-import android.media.session.MediaSession;
-import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcel;
 import android.os.RemoteException;
-import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -40,46 +31,25 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ext.mediasession.DefaultPlaybackController;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.PlayerNotificationManager;
-import com.google.android.exoplayer2.upstream.Allocator;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultAllocator;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.upstream.TransferListener;
-import com.google.android.exoplayer2.util.Util;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
-
-import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_FAST_FORWARD;
-import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_NEXT;
 import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_PAUSE;
 import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_PLAY;
-import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_PREVIOUS;
-import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_REWIND;
-import static com.google.android.exoplayer2.ui.PlayerNotificationManager.ACTION_STOP;
-
-//import wseemann.media.FFmpegMediaPlayer;
 
 /**
  * Created by Alexandre on 06/09/2017.
@@ -89,9 +59,12 @@ public class RadioFragment extends Fragment {
 
     //    String mms_url = "mms://radio.correios.com.br/radio";
 //    String mms_url = "rtsp://radio.correios.com.br/radio";
-    String mms_url = "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws";
+//    String mms_url = "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws";
+    String mms_url = "http://200.17.70.162:8080/facom";
 
     public static final String CHANNEL_1_ID = "channel1";
+
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     //    String mms_url = "mms://200.17.70.162:8080/Rádio Universitária";
     boolean botaoPlay = false;
@@ -116,6 +89,14 @@ public class RadioFragment extends Fragment {
     private MediaControllerCompat mController;
     private boolean isActivityActive = true;
     NotificationManager notificationManager;
+    TextView radioStatus;
+    TextView espectadores;
+    int quantidade;
+    int previousPlaybackState = 2;
+    int status = 0;
+    boolean hasInternet;
+    boolean hasInternetBefore = false;
+    boolean radioOnline;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,23 +104,46 @@ public class RadioFragment extends Fragment {
         if(savedInstanceState==null) {
             view = inflater.inflate(R.layout.radio_fragment, container, false);
 
+            getActivity().startService(new Intent(getActivity(), ClosingService.class));
+
             progressBar = view.findViewById(R.id.progressBar);
             playButton = view.findViewById(R.id.playButton);
             facebookButton = view.findViewById(R.id.facebook);
             reload = view.findViewById(R.id.reload);
+            radioStatus = view.findViewById(R.id.radio_status);
+            espectadores = view.findViewById(R.id.espectadores);
             progressBar.setVisibility(View.INVISIBLE);
 
             sharedPreferences = getActivity().getSharedPreferences("main", 0);
             editor = sharedPreferences.edit();
 
-//        mp = (FFmpegMediaPlayerSerial) getArguments().getSerializable("mediaPlayer");
+            mDatabase.child("radio").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try {
+                        mms_url = dataSnapshot.getValue(String.class);
+                        checkInternet();
+                    } catch (NullPointerException e) {
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             setupMediaPlayer();
+
+            checkInternet();
+
             createNotificationChannels();
 
             mediaSessionBegin();
 
-            tocando = sharedPreferences.getBoolean("tocando", false);
-            carregando = sharedPreferences.getBoolean("carregando", false);
+//            tocando = sharedPreferences.getBoolean("tocando", false);
+//            carregando = sharedPreferences.getBoolean("carregando", false);
 
             IntentFilter filter = new IntentFilter();
             filter.addAction(ACTION_PAUSE);
@@ -147,38 +151,6 @@ public class RadioFragment extends Fragment {
             getActivity().registerReceiver(receiver, filter);
 
             view.findViewById(R.id.scroll).setSelected(true);
-
-//        initMediaPlayer();
-
-//        mp.setOnPreparedListener(new FFmpegMediaPlayer.OnPreparedListener() {
-//
-//            @Override
-//            public void onPrepared(FFmpegMediaPlayer mp) {
-////                if(!reloadButton) {
-//                mp.start();
-////                }
-//                playButton.bringToFront();
-//                progressBar.setVisibility(View.INVISIBLE);
-////                reloadButton = false;
-//                carregando = false;
-//                tocando = true;
-//                editor.putBoolean("tocando", true);
-//                editor.putBoolean("carregando", false);
-//                editor.apply();
-//            }
-//        });
-//        mp.setOnErrorListener(new FFmpegMediaPlayer.OnErrorListener() {
-//
-//            @Override
-//            public boolean onError(FFmpegMediaPlayer mp, int what, int extra) {
-//                progressBar.setVisibility(View.INVISIBLE);
-//                playButton.setBackgroundResource(R.drawable.ic_play_circle_outline_black_48dp);
-//                playButton.bringToFront();
-////                primeiro = true;
-//                mp.reset();
-//                return false;
-//            }
-//        });
 
             facebookButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -194,92 +166,15 @@ public class RadioFragment extends Fragment {
             reload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    player.stop();
-                    carregando = false;
-                    buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
-//                if (!carregando && tocando) {
-//                    try {
-//                        if (mp.isPlaying()) {
-////                            mp.pause();
-////                            mp.stop();
-//                            mp.reset();
-//                            tocando = false;
-//                            editor.putBoolean("tocando", false);
-//                            editor.apply();
-////                            playButton.setBackgroundResource(R.drawable.ic_play_circle_outline_black_48dp);
-//                        }
-////                        if (!primeiro) {
-////                            mp.reset();
-////                        }
-////                        mp.setDataSource(mms_url);
-////                        progressBar.setBackgroundResource(R.drawable.ic_play_circle_outline_black_48dp);
-////                        progressBar.setVisibility(View.VISIBLE);
-////                        progressBar.bringToFront();
-////                        mp.prepareAsync();
-////                        reloadButton = true;
-////                        botaoPlay = false;
-////                        if (primeiro) {
-////                            primeiro = !primeiro;
-////                        }
-//                        //mp.pause();
-//                    } catch (IllegalArgumentException e) {
-//                        e.printStackTrace();
-//                    } catch (SecurityException e) {
-//                        e.printStackTrace();
-//                    } catch (IllegalStateException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                    stopPlayer();
                 }
             });
 
             playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    snackbar();
                     initMediaPlayer();
-//                PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-//                        .setActions(PlaybackState.ACTION_PLAY)
-//                        .setState(PlaybackState.STATE_STOPPED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, SystemClock.elapsedRealtime())
-//                        .build();
-//                mMediaSession.setPlaybackState(state);
-//                if (!carregando && !tocando) {
-////                    if (primeiro) {
-////                        primeiro = !primeiro;
-////                        playButton.setBackgroundResource(R.drawable.ic_pause_circle_outline_black_48dp);
-//                        try {
-//                            mp.setDataSource(mms_url);
-//                            progressBar.setVisibility(View.VISIBLE);
-//                            progressBar.bringToFront();
-////                            botaoPlay = !botaoPlay;
-//                            mp.prepareAsync();
-//                            carregando = true;
-//                            editor.putBoolean("carregando", true);
-//                            editor.apply();
-//                        } catch (IllegalArgumentException e) {
-//                            e.printStackTrace();
-//                        } catch (SecurityException e) {
-//                            e.printStackTrace();
-//                        } catch (IllegalStateException e) {
-//                            e.printStackTrace();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-////                    }
-////                    else {
-////                        mp.start();
-////                        if (!botaoPlay || reloadButton) {
-////                            playButton.setBackgroundResource(R.drawable.ic_pause_circle_outline_black_48dp);
-////                            reloadButton = false;
-////                            mp.start();
-////                        } else {
-//////                            playButton.setBackgroundResource(R.drawable.ic_play_circle_outline_black_48dp);
-////                            //mp.stop();
-////                            //mp.reset();
-////                            mp.pause();
-////                        }
-////                        botaoPlay = !botaoPlay;
-////                    }
-//                }
                 }
             });
         }
@@ -287,22 +182,37 @@ public class RadioFragment extends Fragment {
         return view;
     }
 
+    private void snackbar() {
+        if(!radioOnline) {
+            Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.coordinator),
+                    "Rádio Offline", Snackbar.LENGTH_SHORT);
+            mySnackbar.show();
+        }
+        if(!hasInternet) {
+            Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.coordinator),
+                    "Por favor, verifique sua conexão", Snackbar.LENGTH_SHORT);
+            mySnackbar.show();
+        }
+    }
+
     private void initMediaPlayer() {
-//        Uri uri = Uri.parse(mms_url);
-//        MediaSource mediaSource = buildMediaSource(uri);
-//        player.prepare(mediaSource, true, false);
+        checkInternet();
         Log.d("DEV/State", ""+player.getPlaybackState());
-//        player.setPlayWhenReady(true);
-        if(!carregando) {
-            carregando = true;
+        if((status == 3 || status == 0) && hasInternet && radioOnline) {
+            status = 1;
             progressBar.setVisibility(View.VISIBLE);
-//            if (!player.getPlayWhenReady()) {
+            Uri uri = Uri.parse(mms_url);
+            MediaSource mediaSource = buildMediaSource(uri);
+            player.prepare(mediaSource, true, false);
             player.setPlayWhenReady(true);
-//            } else {
-            player.retry();
             buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE));
         }
-//        }
+    }
+
+    private void stopPlayer() {
+        status = 3;
+        player.stop();
+        buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
     }
 
     @Override
@@ -320,28 +230,109 @@ public class RadioFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        player.stop();
+//        stopPlayer();
+        if(status == 2) {
+            status = 3;
+            player.stop();
+        }
+//        buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
         player.release();
+        notificationManager.cancel(1);
         getActivity().unregisterReceiver(receiver);
     }
 
+//    public static void clearTask() {
+//        mDatabase.child("espec").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                0int quantidade = dataSnapshot.getValue(Integer.class);
+//                mDatabase.setValue(quantidade-1);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+
     private void setupMediaPlayer() {
+        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         player = ExoPlayerFactory.newSimpleInstance(getActivity());
+        mDatabase.child("espec").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                quantidade = dataSnapshot.getValue(Integer.class);
+                espectadores.setText("" + quantidade);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         player.addListener(new Player.EventListener() {
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if(playbackState == PlaybackState.STATE_PLAYING) {
-                    progressBar.setVisibility(View.INVISIBLE);
+                checkInternet();
+                if(hasInternet && radioOnline) {
+                    Log.d("DEV/PlaybackState", "STATE: " + player.getPlaybackState());
+                    if (playbackState == Player.STATE_READY) {
+                        radioStatus.setText("ON");
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                    if (status == 1 &&
+                            (previousPlaybackState == PlaybackState.STATE_STOPPED ||
+                                    previousPlaybackState == PlaybackState.STATE_PAUSED)) {
+                        status = 2;
+                        Log.d("DEV/PlaybackState", playbackState + "");
+                        previousPlaybackState = playbackState;
+                        mDatabase.child("espec").setValue(quantidade + 1);
+                    }
+                    if ((playbackState == PlaybackState.STATE_STOPPED ||
+                            playbackState == PlaybackState.STATE_PAUSED) &&
+                            status == 3) {
+                        status = 0;
+                        Log.d("DEV/PlaybackState", playbackState + "");
+                        previousPlaybackState = playbackState;
+                        mDatabase.child("espec").setValue(quantidade - 1);
+                    }
                 }
-//                if(playbackState == PlaybackState.STATE_STOPPED && !carregando) {
-//                    player.release();
+                else {
+
+                }
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                Log.d("DEV/Error", "Código do erro:"+error.type);
+//                Log.d("DEV/PlaybackState", "STATE1: "+player.getPlaybackState());
+//                if(error.type==0) {
+//                    radioStatus.setText("OFF");
+//                    player.retry();
+//                    progressBar.setVisibility(View.INVISIBLE);
+//                    status = 0;
+//                    Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.coordinator),
+//                            "Rádio Offline", Snackbar.LENGTH_SHORT);
+//                    mySnackbar.show();
 //                }
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+                Log.d("DEV/LOADING", "Loading: "+isLoading);
+                Log.d("DEV/PlaybackState", "STATE2: "+player.getPlaybackState());
+                if(!isLoading) {
+
+                }
             }
         });
         Uri uri = Uri.parse(mms_url);
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
     }
+
+
 
 //    private void handleIntent( Intent intent ) {
 //        if( intent == null || intent.getAction() == null )
@@ -380,17 +371,6 @@ public class RadioFragment extends Fragment {
     }
 
     private void buildNotification(NotificationCompat.Action action) {
-//        Notification.MediaStyle style = new Notification.MediaStyle();
-//
-//        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
-//        intent.setAction(ACTION_STOP);
-//        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-//        Notification.Builder builder = new Notification.Builder(this)
-//                .setSmallIcon(R.drawable.ic_launcher)
-//                .setContentTitle("Media Title")
-//                .setContentText("Media Artist")
-//                .setDeleteIntent(pendingIntent)
-//                .setStyle(style);
 
         String title = "Rádio Facom";
         String message = "103,9 FM";
@@ -417,8 +397,6 @@ public class RadioFragment extends Fragment {
                 .build();
 
         notification.flags = Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
-
-        notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 //        this.notificationManager = new PlayerNotificationManager(
 //                getActivity(),
 //                CHANNEL_1_ID,
@@ -428,31 +406,6 @@ public class RadioFragment extends Fragment {
         notificationManager.notify(1, notification);
 //        notificationManager.notify( 1, notification);
     }
-
-//    public void sendOnChannel2() {
-//        String title = "Radio Facom";
-//        String message = "103,9 FM";
-//
-//        Bitmap artwork = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-//
-//        Intent intent = new Intent(getActivity(), RadioFragment.class);
-//        intent.setAction(ACTION_STOP);
-//        PendingIntent pendingIntent = PendingIntent.getService(getActivity(), 1, intent, 0);
-//
-//        Notification notification = new NotificationCompat.Builder(getActivity(), CHANNEL_2_ID)
-//                .setSmallIcon(R.mipmap.ic_launcher_round)
-//                .setContentTitle(title)
-//                .setContentText(message)
-//                .setLargeIcon(artwork)
-//                .addAction(R.drawable.ic_stop_notification, "stop", pendingIntent)
-//                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
-//                        .setShowActionsInCompactView(0)
-//                        .setMediaSession(mMediaSession.getSessionToken()))
-//                .setPriority(NotificationCompat.PRIORITY_LOW)
-//                .build();
-//
-//        notificationManager.notify(2, notification);
-//    }
 
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -477,19 +430,62 @@ public class RadioFragment extends Fragment {
             if(ACTION_PAUSE.equals(action)) {
                 Log.d("DEV/RadioFragment", "STOP");
                 carregando = false;
-                player.stop();
-                buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", ACTION_PLAY));
+                stopPlayer();
             }
             else if(ACTION_PLAY.equals(action)) {
                 Log.d("DEV/RadioFragment", "PLAY");
-                if(player.getPlaybackState() != PlaybackState.STATE_PLAYING) {
+                snackbar();
+                if(player.getPlaybackState() != PlaybackState.STATE_PLAYING && hasInternet && radioOnline) {
                     progressBar.setVisibility(View.VISIBLE);
+                    status = 1;
                     player.retry();
                     buildNotification(generateAction(android.R.drawable.ic_media_pause, "Pause", ACTION_PAUSE));
                 }
             }
         }
     };
+
+    private void checkInternet() {
+        Log.d("DEV/Radio", mms_url);
+        new InternetCheck(mms_url, internet -> {
+            Log.d("DEV/Internet", internet[0]+", "+internet[1]);
+            if(!internet[0]) {
+                hasInternet = false;
+                status = 1;
+//                Toast.makeText(getActivity(), "Por favor, verifique sua conexão",
+//                        Toast.LENGTH_LONG).show();
+                radioStatus.setText("OFF");
+                espectadores.setText("0");
+                progressBar.setVisibility(View.INVISIBLE);
+                stopPlayer();
+            } else {
+                hasInternet = true;
+                if(!hasInternetBefore) {
+                    Uri uri = Uri.parse(mms_url);
+                    MediaSource mediaSource = buildMediaSource(uri);
+                    player.prepare(mediaSource, true, false);
+                }
+            }
+            hasInternetBefore = hasInternet;
+            if(!internet[1]) {
+                radioOnline = false;
+                status = 1;
+                radioStatus.setText("OFF");
+//                player.retry();
+                progressBar.setVisibility(View.INVISIBLE);
+            } else {
+                radioOnline = true;
+                status = 0;
+                radioStatus.setText("ON");
+//                player.retry();
+//                if(!hasInternetBefore) {
+//                    Uri uri = Uri.parse(mms_url);
+//                    MediaSource mediaSource = buildMediaSource(uri);
+//                    player.prepare(mediaSource, true, false);
+//                }
+            }
+        });
+    }
 
     private void mediaSessionBegin() {
         mMediaSession = new MediaSessionCompat(getActivity(), "this");
