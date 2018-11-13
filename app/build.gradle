@@ -22,8 +22,8 @@ android {
         applicationId "magosoftware.radiofacomufjf"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 4
-        versionName "0.5"
+        versionCode 5
+        versionName "0.5.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     android {

@@ -37,6 +37,7 @@ class InternetCheck extends AsyncTask<Void,Void,Boolean[]> {
 //            HttpGet requestForTest = new HttpGet(url);
             URL url_teste = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) url_teste.openConnection();
+            connection.setConnectTimeout(1000);
             int code = connection.getResponseCode();
             if(code == 200) {
                 // reachable

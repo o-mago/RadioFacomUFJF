@@ -136,8 +136,6 @@ public class RadioFragment extends Fragment {
 
             setupMediaPlayer();
 
-            checkInternet();
-
             createNotificationChannels();
 
             mediaSessionBegin();
