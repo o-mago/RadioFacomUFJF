@@ -185,8 +185,7 @@ public class RadioFragment extends Fragment {
             Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.coordinator),
                     "Rádio Offline", Snackbar.LENGTH_SHORT);
             mySnackbar.show();
-        }
-        if(!hasInternet) {
+        } else if(!hasInternet) {
             Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.coordinator),
                     "Por favor, verifique sua conexão", Snackbar.LENGTH_SHORT);
             mySnackbar.show();

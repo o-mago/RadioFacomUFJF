@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +31,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.android.exoplayer2.source.MediaSource;
 
 import java.io.IOException;
 
@@ -64,6 +68,7 @@ public class RadioMain extends AppCompatActivity {
 //    FFmpegMediaPlayerSerial mp;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    private boolean hasInternet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -302,7 +307,8 @@ public class RadioMain extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+            checkInternet(position);
+//            selectItem(position);
         }
     }
 
@@ -317,62 +323,83 @@ public class RadioMain extends AppCompatActivity {
 //        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 //
 //        // update selected item and title, then close the drawer
-        switch(position) {
-            //Rádio:
-            case 0:
-                Bundle bundle = new Bundle();
+        if(hasInternet) {
+            switch (position) {
+                //Rádio:
+                case 0:
+                    Bundle bundle = new Bundle();
 //                bundle.putSerializable("mediaPlayer", mp);
-                Fragment fragment = new RadioFragment();
-                fragment.setArguments(bundle);
-                replaceFragment(fragment);
-                break;
+                    Fragment fragment = new RadioFragment();
+                    fragment.setArguments(bundle);
+                    replaceFragment(fragment);
+                    break;
                 //Programação:
-            case 1:
-                replaceFragment(new ProgramacaoFragment());
-                break;
+                case 1:
+                    replaceFragment(new ProgramacaoFragment());
+                    break;
                 //Entrevistas:
-            case 2:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBEuPhJQ1U3yJefycnwI1m-2");
-                break;
+                case 2:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBEuPhJQ1U3yJefycnwI1m-2");
+                    break;
                 //Equipe Esportiva
-            case 3:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBEB-ZY8p5IehB9y14xhU5b8");
-                break;
+                case 3:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBEB-ZY8p5IehB9y14xhU5b8");
+                    break;
                 //Podcasts
-            case 4:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBFyj2UhbjKc1KbBN7Tkl2P7");
-                break;
+                case 4:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBFyj2UhbjKc1KbBN7Tkl2P7");
+                    break;
                 //Projetos da UFJF
-            case 5:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHTxNG1yojGqu5tHHQE-Mj5");
-                break;
+                case 5:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHTxNG1yojGqu5tHHQE-Mj5");
+                    break;
                 //Programas Antigos
-            case 6:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBFWqU6i0CLuNOBgQ10Ml846");
-                break;
+                case 6:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBFWqU6i0CLuNOBgQ10Ml846");
+                    break;
                 //Rádio Novelas
-            case 7:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBGG3118yY7b1y-7XV21l4kK");
-                break;
+                case 7:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBGG3118yY7b1y-7XV21l4kK");
+                    break;
                 //Radiojornalismo
-            case 8:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHsmsKg4tb-u6ssZVp0ouP7");
-                break;
+                case 8:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHsmsKg4tb-u6ssZVp0ouP7");
+                    break;
                 //Autoral Playlist
-            case 9:
-                //Festival da Canção
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBGlINE9ongx_aw1-NajBaqU");
-                break;
-            case 10:
-                replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHgLZmG9vE1PmFqYoU04CrB");
-                break;
-            default:
-                break;
+                case 9:
+                    //Festival da Canção
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBGlINE9ongx_aw1-NajBaqU");
+                    break;
+                case 10:
+                    replaceFragmentWithArgs(new VideoList(), "PL3AbtMQ-hXBHgLZmG9vE1PmFqYoU04CrB");
+                    break;
+                default:
+                    break;
+            }
         }
 
         mDrawerList.setItemChecked(position, true);
         setTitle(mPlanetTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    private void checkInternet(int position) {
+        Log.d("DEV/Radio", mms_url);
+        new InternetCheck(mms_url, internet -> {
+            Log.d("DEV/Internet", internet[0]+", "+internet[1]);
+            if(!internet[0]) {
+                hasInternet = false;
+                mDrawerList.setItemChecked(position, true);
+                setTitle(mPlanetTitles[position]);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                Snackbar mySnackbar = Snackbar.make(findViewById(R.id.coordinator),
+                        "Por favor, verifique sua conexão", Snackbar.LENGTH_SHORT);
+                mySnackbar.show();
+            } else {
+                hasInternet = true;
+                selectItem(position);
+            }
+        });
     }
 
     @Override
